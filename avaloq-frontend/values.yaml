@@ -1,0 +1,46 @@
+Labels:
+  app: avaloq-frontend
+
+deploymentSpec:
+  replicaCout: 1
+
+  imagePullSecrets:
+    - name: regcred
+
+containerSpec:
+  resources:
+    requests:
+      cpu: 250m
+      memory: 250Mi
+    limits:
+      cpu: 500m
+      memory: 300Mi
+  image: "sanu1915/gbs-frontend"
+  tag: "954ae71"
+
+serviceSpec:
+  name: avaloq-frontend
+  type: ClusterIP
+  ports:
+    - port: 4200 
+      targetport: 4200
+      protocol: TCP
+
+Ingress:
+  annotations:
+    # cert-manager.io/cluster-issuer: avtls
+    # nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+  ingressClassName: "nginx"
+  rules:
+    - path: /
+      pathType: Prefix
+  host: "avaloq.weather-plant.com"
+  # extraTls: 
+  #   - hosts:
+  #     - avaloq.weather-plant.com
+  #     secretName: ava-tls-config
+
+serviceAccount:
+  create: false
+  name: ""
+  annotations: {}

@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app:  {{ .Values.Labels.app }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.Labels.app }}
+  replicas: {{ .Values.deploymentSpec.replicaCout }}
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.Labels.app }}
+    spec:
+      imagePullSecrets:
+        - name: {{ .Values.imagePullSecret | default "regcred" }}
+      containers:
+        - name:  {{ .Release.Name }}
+          image:  "{{ .Values.containerSpec.image }}:{{ .Values.containerSpec.tag }}"
+          {{- with .Values.containerSpec.resources }}
+          env:
+            - name: POD_IP
+              valueFrom: { fieldRef: { fieldPath: status.podIP } }
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if .Values.serviceSpec.ports }}
+          ports:
+            {{- range .Values.serviceSpec.ports }}
+            - name: {{ .name }}
+              containerPort: {{ .port }}
+            {{- end }}
+          {{- end }}
+      restartPolicy: Always

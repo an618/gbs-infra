@@ -1,0 +1,32 @@
+{{- $servicename := .Values.serviceSpec.name}}
+{{- $serviceport := (index .Values.serviceSpec.ports 0).port }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  labels:
+    app:  {{ .Values.Labels.app }}
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  {{- with .Values.Ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  ingressClassName: {{ .Values.Ingress.ingressClassName }}
+  rules:
+    - host: {{ .Values.Ingress.host }}
+      http:
+        paths:
+    {{- range  .Values.Ingress.rules }}
+        - path: {{ .path }}
+          pathType: {{ .pathType }}
+          backend:
+            service:
+              name: {{ $servicename }}
+              port:
+                number: {{ $serviceport }}
+      {{- end }}
+{{- with .Values.Ingress.extraTls }}
+  tls: 
+      {{- toYaml . | nindent 4 }}
+    {{- end }}
