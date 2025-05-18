@@ -1,22 +1,22 @@
-
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: avaloq-frontend
-  namespace: argocd    # namespace where Argo CD is installed
+  namespace: argocd
 spec:
   project: default
 
   source:
-    repoURL: https://github.com/an618/avaloq-frontend.git  # your GitHub repo URL
-    targetRevision: master                                  # branch or tag
-    path: gbs-infra/avaloq-frontend                       # relative path to your Helm chart
+    repoURL: https://github.com/an618/gbs-infra.git   # your actual repo URL
+    targetRevision: master                             # your branch
+    path: avaloq-frontend                             # relative path to your Helm chart inside the repo
 
   destination:
     server: https://kubernetes.default.svc
-    namespace: gbs                                       # target namespace for deployment
+    namespace: gbs                                   # target namespace in your cluster
 
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
+
