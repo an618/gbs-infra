@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: avaloq-frontend
+  namespace: argocd  # Application CRs go into Argo CD's namespace
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/an618/avaloq-frontend.git
+    targetRevision: main
+    path: helm/avaloq-frontend
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: avaloq
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
