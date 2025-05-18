@@ -13,7 +13,7 @@ spec:
 
   destination:
     server: https://kubernetes.default.svc
-    namespace: avaloq
+    namespace: gbs
 
   syncPolicy:
     automated:
