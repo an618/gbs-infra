@@ -16,7 +16,7 @@ containerSpec:
       cpu: 500m
       memory: 300Mi
   image: "sanu1915/gbs-frontend"
-  tag: "954ae71"
+  tag: "latest"
 
 serviceSpec:
   name: avaloq-frontend
