@@ -1,0 +1,28 @@
+config:
+  argocd:
+    grpcWeb: true  # Enable gRPC-Web for Argo CD communication
+    serverAddress: "https://argo-cd-argocd-server:80"  # Argo CD server address
+    token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhcmdvY2QiLCJzdWIiOiJhZG1pbjphcGlLZXkiLCJuYmYiOjE3NDc2NTM4MTUsImlhdCI6MTc0NzY1MzgxNSwianRpIjoiNDliZmFjYTgtOGZkYy00OTk0LTkxOTEtNzI2ODU5ZTU3M2Q2In0.FVn6_AJIDS4SgJIriyC8MzFZTMTohkZVTqTy8_y8zc4"  # Replace with your Argo CD token
+  gitCommitUser: "argo-cd-image-updater"  # Git commit user for updates
+  gitCommitMail: "argo.cd@weather-plant.com"  # Git commit mail for updates
+  registries:
+    - name: dockerhub
+      api_url: https://index.docker.io/v1/  # DockerHub API URL
+      prefix: docker.io  # Use DockerHub's default prefix
+      ping: true  # Enable registry ping
+      default: true  # Set as default registry
+      insecure: false  # Ensure the connection is secure
+#      credentials: ext:/scripts/docker-login.sh  # Path to Docker login script
+      credsexpire: 12h  # Docker credentials expiration
+
+authScripts:
+  enabled: true  # Enable authentication scripts
+  scripts:
+    docker-login.sh: |
+      #!/bin/sh
+      echo $DOCKERHUB_TOKEN | docker login -u $DOCKERHUB_USERNAME --password-stdin  # Login to DockerHub using token
+
+serviceAccount:
+  create: true  # Create a new service account for the image updater
+  name: "argo-cd-img-updater"  # Service account name
+

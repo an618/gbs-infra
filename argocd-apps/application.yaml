@@ -1,22 +1,66 @@
+# apiVersion: argoproj.io/v1alpha1
+# kind: Application
+# metadata:
+#   name: avaloq-frontend
+#   namespace: argocd
+# spec:
+#   project: default
+
+#   source:
+#     repoURL: https://github.com/an618/gbs-infra.git   # your actual repo URL
+#     targetRevision: master                             # your branch
+#     path: avaloq-frontend                             # relative path to your Helm chart inside the repo
+
+#   destination:
+#     server: https://kubernetes.default.svc
+#     namespace: gbs                                   # target namespace in your cluster
+
+#   syncPolicy:
+#     automated:
+#       prune: true
+#       selfHeal: true
+
+
+
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: avaloq-frontend
   namespace: argocd
+  annotations:
+    # Tell Image Updater which image to track
+    argocd-image-updater.argoproj.io/image-list: alias=docker.io/sanu1915/gbs-frontend
+
+    # Map alias to values.yaml Helm keys
+    argocd-image-updater.argoproj.io/alias.helm.image-name: containerSpec.image
+    argocd-image-updater.argoproj.io/alias.helm.image-tag: containerSpec.tag
+
+    # Set update strategy (latest image based on commit hash or timestamp)
+    argocd-image-updater.argoproj.io/alias.update-strategy: latest
+
+    # Git write-back method (update the Git repo automatically)
+    argocd-image-updater.argoproj.io/write-back-method: git
+
+    # Optional: for debugging or logging
+    # argocd-image-updater.argoproj.io/log.level: debug
 spec:
   project: default
-
   source:
-    repoURL: https://github.com/an618/gbs-infra.git   # your actual repo URL
-    targetRevision: master                             # your branch
-    path: avaloq-frontend                             # relative path to your Helm chart inside the repo
-
+    repoURL: https://github.com/an618/gbs-infra.git
+    targetRevision: master
+    path: avaloq-frontend
+    helm:
+      valueFiles:
+        - values.yaml
   destination:
     server: https://kubernetes.default.svc
-    namespace: gbs                                   # target namespace in your cluster
-
+    namespace: gbs
   syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
     automated:
       prune: true
       selfHeal: true
+
 
